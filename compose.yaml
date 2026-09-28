@@ -1,0 +1,66 @@
+x-app-image: &app-image
+  image: pytest-app
+  build:
+    context: .
+
+x-app-environment: &app-environment
+  TZ: ${TZ:-Asia/Taipei}
+  DATABASE_URL: postgresql+psycopg://db:5432/${POSTGRES_DB:-pytest_demo}
+  TEST_DATABASE_URL: postgresql+psycopg://db:5432/${POSTGRES_TEST_DB:-pytest_demo_test}
+  PGUSER: ${POSTGRES_USER:?POSTGRES_USER must be set in .env}
+  PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+
+services:
+  migrate:
+    <<: *app-image
+    restart: "no"
+    init: true
+    environment:
+      <<: *app-environment
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "-m", "flask", "--app", "wsgi:app", "db", "upgrade"]
+
+  app:
+    <<: *app-image
+    environment:
+      <<: *app-environment
+    ports:
+      - "5000:5000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  db:
+    image: postgres:17-alpine
+    command: ["postgres", "-c", "timezone=${TZ:-Asia/Taipei}"]
+    environment:
+      TZ: ${TZ:-Asia/Taipei}
+      POSTGRES_DB: ${POSTGRES_DB:-pytest_demo}
+      POSTGRES_TEST_DB: ${POSTGRES_TEST_DB:-pytest_demo_test}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+    ports:
+      - "${DB_BIND_ADDRESS:-0.0.0.0}:${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/01-init-test-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:
