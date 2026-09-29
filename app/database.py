@@ -1,23 +1,18 @@
 """Database extension and models."""
 
 from datetime import datetime, timedelta, timezone
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, Float, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-
 class Base(DeclarativeBase):
     pass
-
 
 db = SQLAlchemy(model_class=Base)
 TW_TIMEZONE = timezone(timedelta(hours=8))
 
-
 def taipei_now() -> datetime:
     return datetime.now(TW_TIMEZONE)
-
 
 class Calculation(db.Model):
     __tablename__ = "calculations"

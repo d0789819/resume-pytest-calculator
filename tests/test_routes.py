@@ -1,12 +1,10 @@
 from unittest.mock import Mock
 
-
 def test_health(client):
     response = client.get("/health")
 
     assert response.status_code == 200
     assert response.get_json() == {"status": "ok"}
-
 
 def test_create_and_get_calculation(client, monkeypatch):
     audit_mock = Mock(return_value=True)
@@ -27,7 +25,6 @@ def test_create_and_get_calculation(client, monkeypatch):
         "https://audit.example.test/events",
         {"action": "calculation.created", "calculation_id": calculation_id},
     )
-
 
 def test_list_update_and_delete_calculation(client, monkeypatch):
     monkeypatch.setattr("app.routes.send_audit_event", Mock(return_value=True))
@@ -50,7 +47,6 @@ def test_list_update_and_delete_calculation(client, monkeypatch):
     assert deleted.status_code == 204
     assert client.get(f"/calculations/{calculation_id}").status_code == 404
 
-
 def test_rejects_division_by_zero(client):
     response = client.post(
         "/calculations", json={"operation": "divide", "a": 9, "b": 0}
@@ -59,13 +55,11 @@ def test_rejects_division_by_zero(client):
     assert response.status_code == 400
     assert response.get_json() == {"error": "cannot divide by zero"}
 
-
 def test_rejects_missing_field(client):
     response = client.post("/calculations", json={"operation": "add", "a": 1})
 
     assert response.status_code == 400
     assert response.get_json() == {"error": "missing fields: b"}
-
 
 def test_rejects_non_numeric_operands(client):
     response = client.post(
@@ -74,7 +68,6 @@ def test_rejects_non_numeric_operands(client):
 
     assert response.status_code == 400
     assert response.get_json() == {"error": "a and b must be numbers"}
-
 
 def test_rejects_unknown_operation(client):
     response = client.post(

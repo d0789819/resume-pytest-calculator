@@ -1,9 +1,7 @@
 """HTTP routes for the calculation CRUD API."""
 
 from numbers import Real
-
 from flask import Blueprint, current_app, jsonify, request
-
 from app.database import Calculation, db
 from app.services import send_audit_event
 from calculator import add, divide
@@ -11,10 +9,8 @@ from calculator import add, divide
 api = Blueprint("api", __name__)
 OPERATIONS = {"add": add, "divide": divide}
 
-
 def _error(message: str, status: int):
     return jsonify({"error": message}), status
-
 
 def _parse_calculation_payload():
     payload = request.get_json(silent=True)
@@ -43,10 +39,8 @@ def _parse_calculation_payload():
 
     return {"operation": operation, "a": float(a), "b": float(b)}, None
 
-
 def _calculate(data: dict) -> float:
     return float(OPERATIONS[data["operation"]](data["a"], data["b"]))
-
 
 @api.get("/")
 def index():
@@ -57,11 +51,9 @@ def index():
         }
     )
 
-
 @api.get("/health")
 def health():
     return jsonify({"status": "ok"})
-
 
 @api.get("/calculations")
 def list_calculations():
@@ -70,14 +62,12 @@ def list_calculations():
     ).scalars()
     return jsonify([record.to_dict() for record in records])
 
-
 @api.get("/calculations/<int:calculation_id>")
 def get_calculation(calculation_id: int):
     record = db.session.get(Calculation, calculation_id)
     if record is None:
         return _error("calculation not found", 404)
     return jsonify(record.to_dict())
-
 
 @api.post("/calculations")
 def create_calculation():
@@ -95,7 +85,6 @@ def create_calculation():
     )
     return jsonify(record.to_dict()), 201
 
-
 @api.put("/calculations/<int:calculation_id>")
 def update_calculation(calculation_id: int):
     record = db.session.get(Calculation, calculation_id)
@@ -112,7 +101,6 @@ def update_calculation(calculation_id: int):
     record.result = _calculate(data)
     db.session.commit()
     return jsonify(record.to_dict())
-
 
 @api.delete("/calculations/<int:calculation_id>")
 def delete_calculation(calculation_id: int):

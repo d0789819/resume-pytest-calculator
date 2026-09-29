@@ -12,7 +12,6 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-
 def upgrade():
     op.create_table(
         "calculations",
@@ -24,7 +23,6 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-
 
 def downgrade():
     op.drop_table("calculations")

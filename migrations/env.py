@@ -2,7 +2,6 @@
 
 import logging
 from logging.config import fileConfig
-
 from alembic import context
 from flask import current_app
 
@@ -12,13 +11,11 @@ logger = logging.getLogger("alembic.env")
 extension = current_app.extensions["migrate"]
 target_metadata = extension.db.metadata
 
-
 def process_revision_directives(_context, _revision, directives):
     if getattr(config.cmd_opts, "autogenerate", False):
         if directives[0].upgrade_ops.is_empty():
             directives[:] = []
             logger.info("No changes in schema detected.")
-
 
 def run_migrations_offline():
     context.configure(
@@ -28,7 +25,6 @@ def run_migrations_offline():
     )
     with context.begin_transaction():
         context.run_migrations()
-
 
 def run_migrations_online():
     options = dict(extension.configure_args)
@@ -42,7 +38,6 @@ def run_migrations_online():
         )
         with context.begin_transaction():
             context.run_migrations()
-
 
 if context.is_offline_mode():
     run_migrations_offline()

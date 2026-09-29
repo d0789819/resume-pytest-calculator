@@ -1,15 +1,12 @@
 """Flask application factory."""
 
 import os
-
 from flask import Flask
 from flask_migrate import Migrate
-
 from app.database import db
 from app.routes import api
 
 migrate = Migrate()
-
 
 def create_app(test_config: dict | None = None) -> Flask:
     app = Flask(__name__)

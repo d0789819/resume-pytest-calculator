@@ -1,7 +1,7 @@
 # 1. Introduction
 
-專案提供 API 服務狀態檢查，以及數學運算紀錄的新增、查詢、更新與刪除功能，並支援依 ID 操作單筆紀錄、驗證錯誤輸入，以 JSON 作為 API 的請求與回應格式。  
-後端及資料庫分別採用 Flask 與 PostgreSQL，並使用 pytest 驗證數學運算功能。
+使用 pytest 實作數學運算單元測試、API 測試、fixture 與 mock 整合測試，後端及資料庫分別採用 Flask 與 PostgreSQL。  
+提供 API 服務狀態檢查，以及數學運算紀錄的新增、查詢、更新與刪除功能，並支援依 ID 操作單筆紀錄、驗證錯誤輸入，以 JSON 作為 API 的請求與回應格式。
 
 ## 專案特色
 

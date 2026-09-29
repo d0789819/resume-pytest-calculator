@@ -2,7 +2,6 @@
 
 import requests
 
-
 def send_audit_event(url: str, event: dict) -> bool:
     """Send an audit event; an empty URL disables the optional integration."""
     if not url:

@@ -1,9 +1,6 @@
 from unittest.mock import Mock
-
 import requests
-
 from app.services import send_audit_event
-
 
 def test_send_audit_event_posts_json(monkeypatch):
     response = Mock()
@@ -18,13 +15,11 @@ def test_send_audit_event_posts_json(monkeypatch):
         "https://audit.example.test/events", json={"id": 7}, timeout=2
     )
 
-
 def test_send_audit_event_handles_network_error(monkeypatch):
     post_mock = Mock(side_effect=requests.ConnectionError("offline"))
     monkeypatch.setattr("app.services.requests.post", post_mock)
 
     assert send_audit_event("https://audit.example.test/events", {"id": 7}) is False
-
 
 def test_send_audit_event_is_disabled_without_url(monkeypatch):
     post_mock = Mock()
